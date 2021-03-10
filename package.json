@@ -1,6 +1,6 @@
 {
   "name": "npm2docker",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0-alpha.1",
   "description": "Dockerize package from npm registry and push to docker registry",
   "keywords": [
     "docker",
