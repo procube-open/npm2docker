@@ -14,7 +14,7 @@ const argv = require('yargs/yargs')(process.argv.slice(2))
   .describe('x', 'Prefix of tag(ex. rep.example.com:5000/, procube/)')
   .alias('f', 'file')
   .describe('f', 'Path to package.json')
-  .default({f: 'pacakge.json', x: ''})
+  .default({f: 'package.json', x: ''})
   .help('h')
   .alias('h', 'help')
   .strict()
@@ -80,7 +80,7 @@ async function ensureVersion(name, version) {
     }
     await wait()
   }
-  throw `The pacakge ${name}@${version}has not been released.`
+  throw `The package ${name}@${version}has not been released.`
 }
 
 function getCmd(bin, baseName) {
