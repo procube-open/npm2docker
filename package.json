@@ -1,0 +1,31 @@
+{
+  "name": "npm2docker",
+  "version": "1.0.0-alpha",
+  "description": "Dockerize package from npm registry and push to docker registry",
+  "keywords": [
+    "docker",
+    "dockerhub",
+    "registry",
+    "push",
+    "publish",
+    "release",
+    "npmjs",
+    "npm"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/procube-open/npm2docker"
+  },
+  "main": "index.js",
+  "author": "mitsuru@procube.jp",
+  "license": "MIT",
+  "bin": "./index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "npm-registry-fetch": "^9.0.0",
+    "shell-escape": "^0.2.0",
+    "yargs": "^16.2.0"
+  }
+}
