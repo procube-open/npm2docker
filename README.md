@@ -50,12 +50,11 @@ You can specify the destination of the push with --prefix.
 
 #### To register to a repository in an Organization on dockerhub.
 
-You can use --prefix to specify where to push the image:
-For example, if you want to register to organizatioin "exorg", you can use --prefix to add / to the organization name. For example, to register with exorg, specify "--prefix exorg/".
+You can use --prefix to add the organization name with suffix "/". For example, to register to "exorg" organization, specify "--prefix exorg/".
 
 #### To register to a unique registry, use --prefix
 
-To register to a unique registry, specify --prefix FQDN:port-number followed by /. For example, if you want to register to reg.example.com:5000, specify "--prefix reg.example.com:5000/".
+To register to a own registry, specify --prefix FQDN:port-number followed by /. For example, if you want to register to reg.example.com:5000, specify "--prefix reg.example.com:5000/".
 
 ### Other
 For other usage, please refer to the help.
