@@ -85,8 +85,8 @@ async function main() {
   }
   var dockerfile = `FROM ${base_image}\nWORKDIR /root\n`
   if (npmrcContents) {
-    dockerfile += `RUN echo -e $'${npmrcContents.replace(/'/g, `'\\''`).replace(/\r?\n/g, '\\n\\\n')}' >> /root/.npmrc \\\n` +
-      `yarn global add ${name}@${version} --exact \\\n` +
+    dockerfile += `RUN echo -e $'${npmrcContents.replace(/'/g, `'\\''`).replace(/\r?\n/g, '\\n\\\n')}' >> /root/.npmrc &&\\\n` +
+      `yarn global add ${name}@${version} --exact &&\\\n` +
       'rm /root/.npmrc\n'
   } else {
     dockerfile += `RUN yarn global add ${name}@${version} --exact\n`
