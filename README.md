@@ -10,7 +10,7 @@ npm2docker is a tool for developers to build a Docker image of a javascript prog
 ## Features
 
 - No Dockerfile is required
-- Identifies and automatically assigns image names and revision tags from pacakge.json
+- Identify the image name and revision tag from the npm repository registration, and assign them automatically
 - Supports npm login
 
 ## How to use
@@ -28,8 +28,16 @@ yarn add --dev npm2docker
 Add the following to scripts in packge.json.
 
 ```
-"register-image": "npx npm2docker --latest --push --remove",
+"register-image": "npx npm2docker package-name --latest --push --remove",
 ```
+
+If you want to use it against packge that is registered in the npm private repository
+You will need to run npm login beforehand. Then, specify the URL of the repository in the npm_config_registry environment variable as follows.
+
+```
+"register-image": "npm_config_registry=https://registry.npmjs.org npx npm2docker package-name --latest --push --remove",
+```
+
 
 If you want to release it, use the following command.
 
@@ -39,10 +47,14 @@ yarn register-image
 
 This script will do the following:
 
-1. Build an image tagged with the version attribute in pacakge.json
+1. Build an image tagged as package-name:last-release-revision
 1. Push the image to dockerhub
 1. Push same image to dockerhub with latest tag
 1. Delete the image.
+
+Now, If the package name is prefixed with the scope name, the image name will be the one without the scope name.
+The last revision is the one shown by the "docker view package_name version" command.
+The CMD of the image will have the key value of the first of the key-values displayed by the "docker view package bin" command.
 
 ### Add to private repository.
 
