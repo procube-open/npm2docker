@@ -12,8 +12,7 @@ const argv = require('yargs/yargs')(process.argv.slice(2))
   .describe('d', 'Dry run')
   .alias('x', 'prefix')
   .describe('x', 'Prefix of tag(ex. rep.example.com:5000/, procube/)')
-  .alias('f', 'file')
-  .describe('f', 'Path to package.json')
+  .demandCommand(1,1)
   .default({f: 'package.json', x: ''})
   .help('h')
   .alias('h', 'help')
@@ -52,46 +51,26 @@ function spawnPromise(modulePath, args, stdinFile = null) {
   });
 }
 
-function wait() {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve()
-        }, wait_interval)
-    })
-}
-
-async function ensureVersion(name, version) {
-  for (var i = 0;  i < retries;  i++) {
-    try {
-      var versions = execFileSync('npm', ['view', name, '--json', 'versions']).toString()
-    } catch (err) {
-      throw `Fail to execute command: npm view ${name} --json versions error=${err}`
-    }
-    try {
-      var {latest} = JSON.parse(versions)
-    } catch (err) {
-      throw `Fail to parse output of: npm view ${name} --json versions; error=${err}; string=${versions}`
-    }
-    if (versions.includes(version)) return ''
-    if ( i == 0 ) {
-      consle.log(`Current latest is ${latest} by "npm view ${name} dist-tags", then start waiting for ${version}`)
-    } else {
-      consle.log(`Waiting.`)
-    }
-    await wait()
-  }
-  throw `The package ${name}@${version}has not been released.`
-}
-
 function getCmd(bin, baseName) {
   if (typeof(bin) == "string") return baseName
   return Object.keys(bin)[0]
 }
 
 async function main() {
-  const package = JSON.parse(fs.readFileSync(argv.f, 'utf8'))
-  const {name, version, bin, files} = package
-  await ensureVersion(name, version)
+  const name = argv._[0]
+  var viewJson
+  try {
+    viewJson = execFileSync('npm', ['view', name, '--json']).toString()
+  } catch (err) {
+    throw `Fail to execute command: "npm view ${name} --json"`
+  }
+  var package
+  try {
+    package = JSON.parse(viewJson)
+  } catch (err) {
+    throw `Fail to parse output of: "npm view ${name} --json"; error=${err}; string=${viewJson}`
+  }
+  const {version, bin} = package
   const baseName = name.split('/').slice(-1)[0]
   var tag = `${baseName}:${version}`
   var latesttag = `${baseName}:latest`
@@ -105,9 +84,13 @@ async function main() {
     npmrcContents = fs.readFileSync(npmrc, 'utf8')
   }
   var dockerfile = `FROM ${base_image}\nWORKDIR /root\n`
-  if (npmrcContents) dockerfile += `RUN echo -e $'${npmrcContents.replace(/'/g, `'\\''`).replace(/\r?\n/g, '\\n\\\n')}' >> /root/.npmrc\n`
-  dockerfile += `RUN yarn global add ${name}@${version} --exact\n`
-  if (npmrcContents) dockerfile += `RUN rm /root/.npmrc\n`
+  if (npmrcContents) {
+    dockerfile += `RUN echo -e $'${npmrcContents.replace(/'/g, `'\\''`).replace(/\r?\n/g, '\\n\\\n')}' >> /root/.npmrc \\\n` +
+      `yarn global add ${name}@${version} --exact \\\n` +
+      'rm /root/.npmrc\n'
+  } else {
+    dockerfile += `RUN yarn global add ${name}@${version} --exact\n`
+  }
   dockerfile += `CMD ${getCmd(bin, baseName)}\n`
   if (! argv.d) {
     console.log(await spawnPromise('docker', ['build', '-t', tag, '-'], stdinFile = dockerfile))
