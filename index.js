@@ -24,7 +24,7 @@ const fs = require('fs')
 const { spawn, execFileSync } = require('child_process')
 const shellescape = require('shell-escape')
 
-const base_image = 'node:15-alpine'
+const base_image = 'node:16-alpine'
 const wait_interval = 20
 const retries = 10
 
